@@ -2,12 +2,12 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
-import { Loader2 } from 'lucide-react' 
+import { Code, CodeXml, Loader2 } from 'lucide-react' 
 
 import * as z from "zod"
 import Link from "next/link"
 import { useDebounceCallback, useDebounceValue } from 'usehooks-ts'
-import { toast } from "sonner"
+import toast, {Toaster} from "react-hot-toast"
 import axios, { AxiosError } from "axios";
 import { Button } from "@/components/ui/button"
 
@@ -122,14 +122,10 @@ const page = () => {
         // router.push(`/verify?AuthId=${AuthId}`)
         setIsCodeSent(true)
         setAuthId(AuthId)
-        toast("Please verify your account", {
-          description: response.data.message,
-        })
+        toast.error("Please verify your account")
         return
       }
-      toast("Success", {
-        description: response.data.message,
-      })
+      toast.success("Verify Now")
       router.push(`/verify?AuthId=${AuthId}`)
       setIsSubmitting(false)
     } catch (error) {
@@ -137,22 +133,24 @@ const page = () => {
       const axiosError = error as AxiosError<ApiResponse>
       
       let errorMessage = axiosError.response?.data.message ?? 'Error submitting'
-      toast("SignUp failed", {
-        description: errorMessage,
-      })
+      toast.error("SignUp failed, please try again later!")
       setIsSubmitting(false)
     }
   }
 
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+    <div className="min-h-screen w-full flex items-center justify-center">
+      <Toaster
+  position="bottom-center"
+  reverseOrder={false}
+/>
+      <div className="w-full max-w-md p-8 space-y-8 rounded-lg shadow-md">
         <div className="text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
-            Welcome to 
+          <h1 className="text-xl font-bold">
+            Welcome to CodeMx <Code size={28} strokeWidth={2.25} className="inline-block"/>
           </h1>
-          <p className="mb-4">Sign up to start your anonymous adventure</p>
+          <p className="mt-4">Sign up to start your learning journey!</p>
         </div>
       <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -163,7 +161,7 @@ const page = () => {
         <FormItem>
           <FormLabel>Username</FormLabel>
           <FormControl>
-            <Input placeholder="username" {...field} onChange={(e)=>{
+            <Input placeholder="Your display name" {...field} onChange={(e)=>{
               field.onChange(e)
               debouncedUsername(e.target.value)
             }} />
@@ -235,14 +233,18 @@ const page = () => {
         ) : ('')
       }
         </p></div>
-      <div className="text-center mt-4">
+      <div className="text-center text-sm mt-4">
           <p>
             Already a member?{' '}
-            <Link href="/sign-in" className="text-blue-600 hover:text-blue-800">
+            <Link href="/sign-in" className="underline underline-offset-4">
               Sign in
             </Link>
           </p>
         </div>
+                <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary  ">
+        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
+        and <a href="#">Privacy Policy</a>.
+      </div>
       </div>
     </div>
   )

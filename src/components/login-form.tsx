@@ -39,15 +39,19 @@ export function LoginForm({
   const [isUserTrue, setIsUserTrue] = useState();
   const [isSubmitting, setIsSubmitting] = useState(false)
   const CheckingUserIden = async() =>{
-
+    setIsSubmitting(true)
+    const response = await axios.post('http://localhost:3000/api/CheckIdentifer', {identifier: Identifer})
+    setIsSubmitting(false)
   }
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+    setIsSubmitting(true)
     const result = await signIn('credentials', {
       redirect: false,
       identifier: data.identifier,
       password: data.password,
     });
-
+    
+    setIsSubmitting(false)
     if (result?.error) {
       if (result.error === 'CredentialsSignin') {
         toast('Incorrect username or password')
@@ -83,7 +87,7 @@ export function LoginForm({
             <h1 className="text-xl font-bold">Welcome to CodeMx.</h1>
             <div className="text-center text-sm">
               Don&apos;t have an account?{" "}
-              <a href="#" className="underline underline-offset-4">
+              <a href="/sign-up" className="underline underline-offset-4">
                 Sign up
               </a>
             </div>

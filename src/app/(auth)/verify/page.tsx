@@ -180,8 +180,8 @@ const VerifyAccount = () => {
     return (
     //     <div className="flex justify-center items-center min-h-screen bg-gray-900 px-4">
     //         <div className="bg-gray-800 text-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-100">
-      <div className="w-140  max-w-md p-6 space-y-0.1 bg-white rounded-lg shadow-md">
+    <div className="min-h-screen w-full flex items-center justify-center">
+      <div className="w-140  max-w-md p-6 space-y-0.1  rounded-lg shadow-md">
       <div className="text-center">
 
         <Form {...form}>
@@ -192,7 +192,7 @@ const VerifyAccount = () => {
             render={({ field }) => (
                 <FormItem>
                 <FormLabel className="text-black justify-left mb-3">One-Time Password</FormLabel>
-                <FormControl className="items-center gap-3 has-[:disabled]:opacity-100 border-black focus:border-black">
+                <FormControl className="items-center gap-3 has-[:disabled]:opacity-100">
                   <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field}>
                     <InputOTPGroup className="relative  border-black data-[active=true]:ring-[2px] rounded-1-md">
                       <InputOTPSlot className=" rounded-1-md"index={0} />
@@ -229,7 +229,7 @@ const VerifyAccount = () => {
           <Button 
             onClick={onResend} 
             // className= {isResending ? "h-8 text-white relative right-36 top-1 pt-2 mt-0": !IsResendAble ? "h-8 text-white relative right-38 top-1 pt-2 mt-0" : "h-8 text-white relative right-42 top-2 pt-2 mt-0" }
-            className= {"flex h-8 text-white text-xs relative right-2 mr-1.75 top-3 pt-2 mt-0" }
+            className= {"flex h-8  text-xs relative right-2 mr-1.75 top-3 pt-2 mt-0" }
             disabled= {!IsResendAble || isResending}
             >{
           isResending ? (
