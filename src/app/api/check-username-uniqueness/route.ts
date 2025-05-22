@@ -38,8 +38,8 @@ export async function GET(request:Request){
             if(exisitingVerifiedUser){
                 return Response.json({
                     success: false,
-                    message :  'Username is already taken :('
-                }, {status: 400})
+                    message :  'Username is already in use'
+                }, {status: 202})
             }
             return Response.json({
                 success: true,

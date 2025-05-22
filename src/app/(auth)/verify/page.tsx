@@ -1,6 +1,6 @@
 "use client"
 import { useParams, useRouter } from "next/navigation";
-import { toast } from "sonner"
+import toast, {Toaster}  from "react-hot-toast"
 import Link from "next/link";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { Button } from "@/components/ui/button";
@@ -97,11 +97,7 @@ const VerifyAccount = () => {
                 code: data.code
             })
 
-            toast("Verification Successful",
-            {
-                description: response.data.message
-            }
-          )
+            toast.success("Verification Successful")
           setIsSubmitting(false)
           setCooldown(true);
           setTimeout(() => setCooldown(false), 2000);
@@ -114,9 +110,19 @@ const VerifyAccount = () => {
                   const axiosError = error as AxiosError<ApiResponse>
                   
                   let errorMessage = axiosError.response?.data.message ?? 'Error submitting'
-                  toast("SignUp failed", {
-                    description: errorMessage,
-                  })
+                  if(axiosError.response?.status === 404 || axiosError.response?.status === 400 ){
+                    errorMessage = 'Verification code has expired'
+                    form.setError("code", { type: "manual", message: errorMessage });
+                    
+                  }
+                  else if(axiosError.response?.status === 401 ){
+                    errorMessage = 'Incorrect Verification Code'
+                    form.setError("code", {type: "manual", message: errorMessage})
+                  }
+                  else{
+                   form.setError("code", {type: "manual", message: errorMessage})
+                   toast.error("Please try again later")
+                 }
         }
     }
     const throttledSubmit = useCallback(
@@ -155,33 +161,42 @@ const VerifyAccount = () => {
         console.log(response)
         console.log("response.status: "+ response.status)
         if(response.status === 202){
-          toast("Please wait a moment")
+          toast("Please wait a moment",{icon: '⏳'})
+          setIsResendAble(false)
+        }
+        if(response.status === 401){
+          toast.error("Verification Timeout")
+          toast.error("Please Sign-up again")
           setIsResendAble(false)
         }
         else if (!response.data.success){
-          toast("Failed to resend OTP", {
-            description: response.data.message
-          })
+          toast.error("Failed to resend OTP")
         }
         else{
           setTimeLeft(90)
-          toast("Otp sent successfully",{
-            description: "Please check your email"
+          toast.success("otp sent Successfully!",{
+            duration:4000
           })
           setIsResending(false)
           
         }
         
       } catch (error) {
+        setIsResending(false)
         toast("error occured")
         console.log("erorr occured while sending otp", error)
       }
     }
     return (
+
     //     <div className="flex justify-center items-center min-h-screen bg-gray-900 px-4">
     //         <div className="bg-gray-800 text-white p-8 rounded-xl shadow-lg w-full max-w-md text-center">
     <div className="min-h-screen w-full flex items-center justify-center">
-      <div className="w-140  max-w-md p-6 space-y-0.1  rounded-lg shadow-md">
+      <Toaster
+  position="bottom-right"
+  reverseOrder={false}
+/>
+      <div className="w-140  max-w-md p-6 border-1 space-y-0.1  rounded-lg shadow-md">
       <div className="text-center">
 
         <Form {...form}>
@@ -191,10 +206,10 @@ const VerifyAccount = () => {
             name="code"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel className="text-black justify-left mb-3">One-Time Password</FormLabel>
-                <FormControl className="items-center gap-3 has-[:disabled]:opacity-100">
+                <FormLabel className="justify-left mb-3">One-Time Password</FormLabel>
+                <FormControl className="items-center gap-3">
                   <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS} {...field}>
-                    <InputOTPGroup className="relative  border-black data-[active=true]:ring-[2px] rounded-1-md">
+                    <InputOTPGroup className="relative rounded-1-md">
                       <InputOTPSlot className=" rounded-1-md"index={0} />
                       <InputOTPSlot className=" rounded-1-md"index={1} />
                       <InputOTPSlot className=" rounded-1-md"index={2} />
@@ -204,7 +219,7 @@ const VerifyAccount = () => {
                     </InputOTPGroup>
                   </InputOTP>
                 </FormControl>
-                <FormDescription className="pr-8.5 mb-0">
+                <FormDescription className="pr-8.5 text-xs mt-4 text-accent-foreground/80">
                 Please enter the one-time password sent to your registered email address <strong>{maskedEmail}</strong> to continue..
 
                 </FormDescription>
@@ -229,7 +244,7 @@ const VerifyAccount = () => {
           <Button 
             onClick={onResend} 
             // className= {isResending ? "h-8 text-white relative right-36 top-1 pt-2 mt-0": !IsResendAble ? "h-8 text-white relative right-38 top-1 pt-2 mt-0" : "h-8 text-white relative right-42 top-2 pt-2 mt-0" }
-            className= {"flex h-8  text-xs relative right-2 mr-1.75 top-3 pt-2 mt-0" }
+            className= {"flex h-8 hover:bg-background bg-background text-foreground text-xs relative right-2 mr-1.75 top-3 pt-2 mt-0" }
             disabled= {!IsResendAble || isResending}
             >{
           isResending ? (
@@ -237,11 +252,11 @@ const VerifyAccount = () => {
             <Loader2 className="mr-2 h-4 w-4 animate-spin"/>RE-SENDING</> 
           ) : IsResendAble ? (
             <>
-            RESEND
+            RESEND?
             </>
           ) : (
             <>
-            RESEND ({formatTime(timeLeft)})
+            RESEND? ({formatTime(timeLeft)})
             </>
           )
         }</Button>

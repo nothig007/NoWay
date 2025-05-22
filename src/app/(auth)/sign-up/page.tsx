@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input"
 import { createContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { signUpSchema } from "@/schemas/signUpSchema"
+import { TypeAnimation } from 'react-type-animation';
 import { ApiResponse } from "@/types/ApiReponse"
 const page = () => {
   const [username, setUsername] = useState('')
@@ -37,7 +38,7 @@ const page = () => {
   const [isCheckingUsername, setIsCheckingUsername] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const debouncedUsername = useDebounceCallback(setUsername, 400);
+  const debouncedUsername = useDebounceCallback(setUsername, 800);
   const debouncedEmail = useDebounceCallback(setEmail, 1000);
   const [AuthId, setAuthId] = useState("")
   const [isCodeSent, setIsCodeSent] = useState(false)
@@ -53,6 +54,59 @@ const page = () => {
     }
   })
 
+  
+  
+  
+const ExampleComponent = () => {
+  return (
+    <TypeAnimation
+      sequence={[
+      'Welcome to CodeMx',
+        1000,
+        'Welcome to CodeMx <>',
+        1000,
+        'Welcome to CodeMx </>',
+        1000
+      ]}
+      wrapper="span"
+      speed={50}
+      style={{ fontSize: '1.25rem', display: 'inline-block' }}
+      repeat={Infinity}
+    />
+  );
+};
+
+
+
+  
+  const onSubmit= async(data: z.infer<typeof signUpSchema>)=>{
+    setIsSubmitting(true)
+    try {
+      const response = await axios.post(`/api/sign-up`, data)
+      const AuthId = response.data.AuthId
+      if(response.data.message === "User already got OTP"){
+        // router.push(`/verify?AuthId=${AuthId}`)
+        setIsCodeSent(true)
+        setAuthId(AuthId)
+        toast.error("Please verify your account")
+        return
+      }
+      toast.success("Verify Now")
+      router.push(`/verify?AuthId=${AuthId}`)
+      setIsSubmitting(false)
+    } catch (error) {
+      console.error("error in sign up: ", error)
+      const axiosError = error as AxiosError<ApiResponse>
+      
+      let errorMessage = axiosError.response?.data.message ?? 'Error submitting'
+      toast.error("SignUp failed, please try again later!")
+      setIsSubmitting(false)
+    }
+  }
+  // if(emailMessage){
+  //   form.setError("email", {type: "manual", message: "Email is already in use."})
+  // }
+  
   useEffect(() => {
     const checkUsernameUnique = async () => {
       if (username){
@@ -62,6 +116,7 @@ const page = () => {
           console.log("Username: "+ username)
           const response = await axios.get(`/api/check-username-uniqueness?username=${username}`)
           setUsernameMessage(response.data.message)
+          
         } catch (error) {
           const axiosError = error as AxiosError<ApiResponse>
           
@@ -90,6 +145,7 @@ const page = () => {
           console.log("Email: "+ Email)
           const response = await axios.get(`/api/auth/checkEmail_InUse?email=${Email}`)
           if(response.data.success){
+            form.clearErrors()
             setEmailMessage('')
           }
           else{
@@ -98,6 +154,8 @@ const page = () => {
         } catch (error) {
           const axiosError = error as AxiosError<ApiResponse>
           console.log("error in email: "+error)
+          form.setError("email", {type: "manual", message: axiosError.response?.data.message})
+          
           setEmailMessage(
             axiosError.response?.data.message ?? 'Error checking email'
           )
@@ -112,32 +170,6 @@ const page = () => {
     checkEmailUnique()
   },
   [Email])
-  
-  const onSubmit= async(data: z.infer<typeof signUpSchema>)=>{
-    setIsSubmitting(true)
-    try {
-      const response = await axios.post(`/api/sign-up`, data)
-      const AuthId = response.data.AuthId
-      if(response.data.message === "User already got OTP"){
-        // router.push(`/verify?AuthId=${AuthId}`)
-        setIsCodeSent(true)
-        setAuthId(AuthId)
-        toast.error("Please verify your account")
-        return
-      }
-      toast.success("Verify Now")
-      router.push(`/verify?AuthId=${AuthId}`)
-      setIsSubmitting(false)
-    } catch (error) {
-      console.error("error in sign up: ", error)
-      const axiosError = error as AxiosError<ApiResponse>
-      
-      let errorMessage = axiosError.response?.data.message ?? 'Error submitting'
-      toast.error("SignUp failed, please try again later!")
-      setIsSubmitting(false)
-    }
-  }
-
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center">
@@ -148,7 +180,8 @@ const page = () => {
       <div className="w-full max-w-md p-8 space-y-8 rounded-lg shadow-md">
         <div className="text-center">
           <h1 className="text-xl font-bold">
-            Welcome to CodeMx <Code size={28} strokeWidth={2.25} className="inline-block"/>
+            {/* Welcome to CodeMx <Code size={28} strokeWidth={2.25} className="inline-block"/> */}
+            {ExampleComponent()}
           </h1>
           <p className="mt-4">Sign up to start your learning journey!</p>
         </div>
@@ -171,7 +204,7 @@ const page = () => {
             {
               isCheckingUsername && <Loader2 className="w-5 h-5 flex justify-end animate-spin "/>
             }
-            <p className={`text-sm ${usernameMessage === "Username is avaliable!" ? `text-green-500`: 'text-red-500'}`}>
+            <p className={`text-sm ${usernameMessage === "Username is avaliable!" ? `font-500`: 'text-red-500 font-500'}`}>
                 {usernameMessage}
             </p>
             </div>
@@ -192,9 +225,9 @@ const page = () => {
               debouncedEmail(e.target.value)
             }}  />
           </FormControl>
-          <p className={`text-sm ${emailMessage === "Email is avaliable!" ? `text-green-500`: 'text-red-500'}`}>
+          {/* <p className={`text-sm ${emailMessage === "Email is avaliable!" ? `text-green-500`: 'text-red-500'}`}>
                 {emailMessage}
-            </p>
+            </p> */}
           {/* <FormDescription>This is your public display name.</FormDescription> */}
           <FormMessage />
         </FormItem>
@@ -214,7 +247,7 @@ const page = () => {
         </FormItem>
       )}
     />
-    <Button type="submit"  disabled={isSubmitting}>
+    <Button type="submit"  disabled={isSubmitting || emailMessage !== ""|| usernameMessage !== "Username is avaliable!"}>
       {
         isSubmitting ? (
           <>
@@ -228,7 +261,7 @@ const page = () => {
       <div><p>
         {
         AuthId ? (
-          <>We have already sent you verification code.<Link href={{ pathname: '/verify', query: { AuthId:  AuthId} }}>Verify Here</Link>
+          <>We have already sent you verification code.<Link className="underline hover:font-500 underline-offset-4" href={{ pathname: '/verify', query: { AuthId:  AuthId} }}>Verify Here</Link>
           </>
         ) : ('')
       }

@@ -17,9 +17,9 @@ export async function POST(request:Request) {
         if(!newOtp) {
             return Response.json ({
                 success: false,
-                message: "Failed to find OTP through AuthId"
+                message: "Verification code has expired"
             },
-        {status: 401})
+        {status: 404})
         }
     const Otp = String(code)
     // const IsCodeValid = user.verifyCode === code.toString()

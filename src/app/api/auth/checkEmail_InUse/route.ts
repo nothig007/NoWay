@@ -41,7 +41,7 @@ export async function GET(request:Request){
             if(exisitingVerifiedUser){
                 return Response.json({
                     success: false,
-                    message :  'Email is already taken :('
+                    message :  'Email is already in use'
                 }, {status: 400})
             }
             return Response.json({

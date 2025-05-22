@@ -7,10 +7,11 @@ export async function POST(request:Request) {
 
     try {
         console.log("request of checking identifer: "+ request )
-        const {identifer} = await request.json()
+        const {identifier} = await request.json()
+        console.log("identifer"+identifier)
         const User = await UserModel.findOne({ $or: [
-            { email: identifer },
-            { username: identifer }
+            { email: identifier },
+            { username: identifier }
         ]})
         if (User) {
             return Response.json({
@@ -24,7 +25,7 @@ export async function POST(request:Request) {
         else{
             return Response.json({
                 success: false,
-                message: "Username/Email is incorrect"
+                message: "Invalid username/email"
             },
         {
             status: 404
@@ -37,7 +38,7 @@ export async function POST(request:Request) {
             message: `Error while checking identifier`,
         },
     {
-        status: 400
+        status: 401
     })
     }
 }
