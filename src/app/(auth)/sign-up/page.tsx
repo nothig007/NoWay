@@ -2,7 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
-import { Code, CodeXml, Loader2 } from 'lucide-react' 
+import { Code, CodeXml, Loader2, User } from 'lucide-react' 
 
 import * as z from "zod"
 import Link from "next/link"
@@ -28,15 +28,19 @@ import { useRouter } from "next/navigation"
 import { signUpSchema } from "@/schemas/signUpSchema"
 import { TypeAnimation } from 'react-type-animation';
 import { ApiResponse } from "@/types/ApiReponse"
+import { signIn } from "next-auth/react"
 const page = () => {
   const [username, setUsername] = useState('')
 
   const[usernameMessage, setUsernameMessage] = useState('')
   const[emailMessage, setEmailMessage] = useState('')
   const[Email, setEmail] = useState('')
+  const[Password, setPassword] = useState('')
+  const[ConfirmPassword, setConfirmPassword] = useState('')
 
   const [isCheckingUsername, setIsCheckingUsername] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [IsPasswordMatching, setIsPasswordMatching] = useState(false)
 
   const debouncedUsername = useDebounceCallback(setUsername, 800);
   const debouncedEmail = useDebounceCallback(setEmail, 1000);
@@ -61,6 +65,8 @@ const ExampleComponent = () => {
   return (
     <TypeAnimation
       sequence={[
+      'Welcome to',
+        100,
       'Welcome to CodeMx',
         1000,
         'Welcome to CodeMx <>',
@@ -106,6 +112,31 @@ const ExampleComponent = () => {
   // if(emailMessage){
   //   form.setError("email", {type: "manual", message: "Email is already in use."})
   // }
+  useEffect(() => {
+    if(ConfirmPassword!==Password){
+      setIsPasswordMatching(false)
+    }
+    else if((ConfirmPassword && Password)===""){
+      setIsPasswordMatching(false)
+    }
+    else{
+      setIsPasswordMatching(true)
+    }
+  
+  
+  }, [ConfirmPassword])
+
+  useEffect(() => {
+    if(Password===ConfirmPassword&&((Password && ConfirmPassword)!=="")){
+      setIsPasswordMatching(true)
+    }
+    else {
+      setIsPasswordMatching(false)
+
+    }
+  
+  
+  }, [Password])
   
   useEffect(() => {
     const checkUsernameUnique = async () => {
@@ -171,6 +202,7 @@ const ExampleComponent = () => {
   },
   [Email])
 
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center">
       <Toaster
@@ -192,9 +224,9 @@ const ExampleComponent = () => {
       name="username"
       render={({ field }) => (
         <FormItem className="mb-4 ">
-          <FormLabel className="text-accent-foreground/90">Username</FormLabel>
+          {/* <FormLabel className="text-accent-foreground/90 ">Username</FormLabel> */}
           <FormControl>
-            <Input placeholder="Your display name" {...field} onChange={(e)=>{
+            <Input className="text-xs" placeholder="Username" {...field} onChange={(e)=>{
               field.onChange(e)
               debouncedUsername(e.target.value)
             }} />
@@ -204,7 +236,7 @@ const ExampleComponent = () => {
             {
               isCheckingUsername && <Loader2 className="w-5 h-5 flex justify-end animate-spin "/>
             }
-            <p className={`text-sm ${usernameMessage === "Username is avaliable!" ? `font-500`: 'text-red-500 font-500'}`}>
+            <p className={`text-xs pl-1 ${usernameMessage === "Username is avaliable!" ? `text-[#50C878] font-500`: 'text-red-500 font-500'}`}>
                 {usernameMessage}
             </p>
             </div>
@@ -218,9 +250,9 @@ const ExampleComponent = () => {
       name="email"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-accent-foreground/90">Email</FormLabel>
+          {/* <FormLabel className="text-accent-foreground/90 ">Email</FormLabel> */}
           <FormControl>
-            <Input placeholder="Enter your email" {...field} onChange={(e)=>{
+            <Input className="text-xs" placeholder="Enter your email" {...field} onChange={(e)=>{
               field.onChange(e)
               debouncedEmail(e.target.value)
             }}  />
@@ -238,16 +270,37 @@ const ExampleComponent = () => {
       name="password"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-accent-foreground/90">Password</FormLabel>
+          {/* <FormLabel className="text-accent-foreground/90 ">Password</FormLabel> */}
           <FormControl>
-            <Input type="password" placeholder="Password" {...field}  />
+            <Input type="password" placeholder="Password" {...field}  onChange={(e)=>{
+              field.onChange(e)
+              setPassword(e.target.value)
+            }}/>
           </FormControl>
           {/* <FormDescription>This is your public display name.</FormDescription> */}
           <FormMessage />
         </FormItem>
       )}
     />
-    <Button className="w-full"type="submit"  disabled={isSubmitting || emailMessage !== ""|| usernameMessage !== "Username is avaliable!"}>
+      
+        <FormItem>
+          {/* <FormLabel className="text-accent-foreground/90 ">Password</FormLabel> */}
+          <FormControl>
+            <Input type="password" placeholder="Confirm Password" onChange={(e)=>{
+              setConfirmPassword(e.target.value)
+            }}/>
+          </FormControl>
+          {
+            ConfirmPassword !== Password && ConfirmPassword !== "" && Password !== "" ? (<>
+            <p className="text-sm text-red-500 font-500">
+                Passwords do not match
+            </p>
+            </>) : ""
+          }
+          {/* <FormDescription>This is your public display name.</FormDescription> */}
+          <FormMessage />
+        </FormItem>
+    <Button className="w-full"type="submit"  disabled={isSubmitting || emailMessage !== "" || usernameMessage !== "Username is avaliable!" || IsPasswordMatching!==true }>
       {
         isSubmitting ? (
           <>
@@ -264,7 +317,9 @@ const ExampleComponent = () => {
             </span>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" value="google" onClick={async()=>{
+              await signIn('google', { redirectTo: "/dashboard" })
+            }}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path
                   d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
@@ -273,7 +328,10 @@ const ExampleComponent = () => {
               </svg>
               Continue with Google
             </Button>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={async()=>{
+              console.log("Sign-in button clicked!");
+  await signIn('github')
+            }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-github" viewBox="0 0 16 16">
   <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
 </svg>

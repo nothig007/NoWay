@@ -1,0 +1,34 @@
+Date : 2025-05-22 21:16:00
+Directory : c:\Users\Shubhransh\Documents\Final Web Development\next-js\LearnNext-js\TypeScript\user-auth\src\app\(auth)
+Total : 5 files,  533 codes, 17 comments, 65 blanks, all 615 lines
+
+Languages
++----------------+------------+------------+------------+------------+------------+
+| language       | files      | code       | comment    | blank      | total      |
++----------------+------------+------------+------------+------------+------------+
+| TypeScript JSX |          5 |        533 |         17 |         65 |        615 |
++----------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                            | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                               |          5 |        533 |         17 |         65 |        615 |
+| dashboard                                                                                                                       |          1 |         13 |          0 |          1 |         14 |
+| settings                                                                                                                        |          1 |          7 |          0 |          2 |          9 |
+| sign-in                                                                                                                         |          1 |         11 |          0 |          2 |         13 |
+| sign-up                                                                                                                         |          1 |        267 |         11 |         30 |        308 |
+| verify                                                                                                                          |          1 |        235 |          6 |         30 |        271 |
++---------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| filename                                                                                                                        | language       | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| c:\Users\Shubhransh\Documents\Final Web Development\next-js\LearnNext-js\TypeScript\user-auth\src\app\(auth)\dashboard\page.tsx | TypeScript JSX |         13 |          0 |          1 |         14 |
+| c:\Users\Shubhransh\Documents\Final Web Development\next-js\LearnNext-js\TypeScript\user-auth\src\app\(auth)\settings\page.tsx  | TypeScript JSX |          7 |          0 |          2 |          9 |
+| c:\Users\Shubhransh\Documents\Final Web Development\next-js\LearnNext-js\TypeScript\user-auth\src\app\(auth)\sign-in\page.tsx   | TypeScript JSX |         11 |          0 |          2 |         13 |
+| c:\Users\Shubhransh\Documents\Final Web Development\next-js\LearnNext-js\TypeScript\user-auth\src\app\(auth)\sign-up\page.tsx   | TypeScript JSX |        267 |         11 |         30 |        308 |
+| c:\Users\Shubhransh\Documents\Final Web Development\next-js\LearnNext-js\TypeScript\user-auth\src\app\(auth)\verify\page.tsx    | TypeScript JSX |        235 |          6 |         30 |        271 |
+| Total                                                                                                                           |                |        533 |         17 |         65 |        615 |
++---------------------------------------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+

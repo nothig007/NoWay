@@ -8,6 +8,7 @@ export interface Message extends Document {
     createdAt : Date;
 }
 
+
 const MessageSchema: Schema<Message>= new Schema({
     content: {
         type: String,
@@ -18,6 +19,12 @@ const MessageSchema: Schema<Message>= new Schema({
         required: true,
         default: Date.now}
     })
+
+    export interface tempEmail extends Document {
+        email: string;
+        _id: String;
+        createdAt: Date
+    }
     
     export interface User extends Document{
         username: string
@@ -35,6 +42,23 @@ const MessageSchema: Schema<Message>= new Schema({
         AuthId: string
 }
 
+
+const tempEmail: Schema<tempEmail> = new Schema({
+    _id: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        expires: 900 
+    }
+})
 
 const UserSchema: Schema<User> = new Schema({
     username: {
@@ -94,3 +118,4 @@ const OTPSchema: Schema<OTP> =  new Schema({
 
 export const UserModel = (mongoose.models.User as mongoose.Model<User>) || mongoose.model<User>("User", UserSchema)
 export const OTPModel = (mongoose.models.OTP as mongoose.Model<OTP>) || mongoose.model<OTP>("OTP", OTPSchema);
+export const TempEmailModel = (mongoose.models.tempEmail as mongoose.Model<tempEmail>) || mongoose.model<tempEmail>("tempEmail", tempEmail);

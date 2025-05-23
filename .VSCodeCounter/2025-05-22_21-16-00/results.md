@@ -1,0 +1,26 @@
+# Summary
+
+Date : 2025-05-22 21:16:00
+
+Directory c:\\Users\\Shubhransh\\Documents\\Final Web Development\\next-js\\LearnNext-js\\TypeScript\\user-auth\\src\\app\\(auth)
+
+Total : 5 files,  533 codes, 17 comments, 65 blanks, all 615 lines
+
+Summary / [Details](details.md) / [Diff Summary](diff.md) / [Diff Details](diff-details.md)
+
+## Languages
+| language | files | code | comment | blank | total |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| TypeScript JSX | 5 | 533 | 17 | 65 | 615 |
+
+## Directories
+| path | files | code | comment | blank | total |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| . | 5 | 533 | 17 | 65 | 615 |
+| dashboard | 1 | 13 | 0 | 1 | 14 |
+| settings | 1 | 7 | 0 | 2 | 9 |
+| sign-in | 1 | 11 | 0 | 2 | 13 |
+| sign-up | 1 | 267 | 11 | 30 | 308 |
+| verify | 1 | 235 | 6 | 30 | 271 |
+
+Summary / [Details](details.md) / [Diff Summary](diff.md) / [Diff Details](diff-details.md)

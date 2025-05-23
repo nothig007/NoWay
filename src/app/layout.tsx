@@ -32,8 +32,8 @@ export default function RootLayout({
 
   const isAuthPage = authPages.includes(pathname);
   return (
-    <html lang="en" suppressHydrationWarning>
       <AuthProvider>
+    <html lang="en" suppressHydrationWarning>
 
         {/* <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}> */}
         <body className={""}>
@@ -52,7 +52,7 @@ export default function RootLayout({
     </CustomThemeProvider>
           <Toaster />
         </body>
-      </AuthProvider>
     </html>
+      </AuthProvider>
   );
 }

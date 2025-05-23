@@ -16,52 +16,55 @@ import { House, Target, Keyboard, FolderCode, FolderUp, ChartNoAxesCombined, Bol
 import { usePathname } from "next/navigation";
 import { NavUser } from "./nav-user";
 import { NavMain } from "@/components/nav-main"
-const data= {
+import { getSession, useSession } from "next-auth/react";
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const {data: session} =  useSession()
+  console.log("Session Data:", JSON.stringify(session, null, 2));
+  const data= {
     user : {
-        name: "Joe Mama",
-        email: "joe.mama@gmail.com",
-        avatar: "https://upload.wikimedia.org/wikipedia/commons/b/bc/President_Joe_Biden_2025.jpg",
-    },
-    navMain: [
-    {   title: "Home",
+      name: "Joe Mama",
+          email: session?.user.email,
+          avatar: "https://upload.wikimedia.org/wikipedia/commons/b/bc/President_Joe_Biden_2025.jpg",
+      },
+      navMain: [
+      {   title: "Home",
         url: "#Home",
         icon: House,
-    },
-    {
+      },
+      {
         title: "Practice",
         url: "#practice",
         icon: Keyboard,
-    },
-    {
+      },
+      {
         title: "DPP",
-        url: "#Home",
-        icon: Target,
-    },
-    {
+          url: "#Home",
+          icon: Target,
+      },
+      {
         title: "Project",
         url: "#projects",
         icon: FolderCode,
-    },
-    {
+      },
+      {
         title: "Upload",
-        url: "#upload",
-        icon: FolderUp,
-    },
-    {
+          url: "#upload",
+          icon: FolderUp,
+        },
+      {
         title: "Leaderboard",
         url: "#leaderboard",
-        icon: ChartNoAxesCombined,
-    },
-    {
+          icon: ChartNoAxesCombined,
+      },
+      {
         title: "Setting",
         url: "User_settings",
         icon: Bolt
-    }
-]
-
-}
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+      }
+    ]
+    
+  }
     const pathname = usePathname();
     const authPages = ["/sign-up", "/sign-in", "/verify"];
 

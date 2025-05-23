@@ -3,9 +3,12 @@ import "next-auth";
 declare module 'next-auth' {
     interface User{
         _id?: string
-        isAcceptingMessages: string
-        isVerified: boolean
+        Email: string
         username?: string
+    }
+    interface GoogleProvider{
+        clientId: string
+        clientSecret: string
     }
     interface Session{
         user: {
