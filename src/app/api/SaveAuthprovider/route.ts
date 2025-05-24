@@ -6,22 +6,25 @@ export async function POST(request:Request) {
     await dbConnect()
    try {
      console.log("request of saving auth prov: "+ request )
-         const {username, email, provider} = await request.json()
-         console.log("username: "+ username + " email: "+ email + " provider: "+ provider)
-         const user = await TempEmailModel.findOne({
-            email: email,
-            provider: provider
-         })
-         const userId = user?.userId
-         if(!user){
-            return Response.json({
-                message: "temp email expired",
-                success: false
-            },
-        {
-            status: 404
-        })
+         const {username, email, provider, userId} = await request.json()
+         console.log("username: "+ username + " email: "+ email + " provider: "+ provider+ "userId: "+ userId)
+         if(provider==="github"){
+
+             const user = await TempEmailModel.findOne({
+                email: email,
+                provider: provider
+             })
+             if(!user){
+                return Response.json({
+                    message: "temp email expired",
+                    success: false
+                },
+            {
+                status: 404
+            })
+             }
          }
+         
          const isUser = await UserModel.findOne({username: username}) 
          console.log(isUser)
          if(!isUser){

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form"
 import { Button } from '@/components/ui/button'
 import { Input } from "@/components/ui/input"
-import { signIn, useSession } from 'next-auth/react'
+import { getSession, signIn, useSession } from 'next-auth/react'
 import axios, { AxiosError } from 'axios'
 import { ApiResponse } from '@/types/ApiReponse'
 import { useRouter } from 'next/navigation'
@@ -104,17 +104,28 @@ const page = () => {
                 console.log("in session and result")
                   const email = session?.user.email
                 const provider = session?.user.provider
+                const userId = session?.user.id
                 const username = Username
                 const reponse = await axios.post('/api/SaveAuthprovider',{
                     username: username,
                     email: email,
-                    provider: provider
+                    provider: provider,
+                    userId: userId
                 })
                 if(reponse.data.success){
-                    await signIn("github", {callbackUrl: "/dashboard"})
+                    if(provider==="google"){
+                        await signIn(provider, {callbackUrl: '/dashboard'})
+                        // const updatedSession = await getSession();
+                        // console.log("Refreshed session:", updatedSession);
+                        Router.refresh();
+                    }
+                    else{
+                        await signIn(provider, {callbackUrl: "/dashboard"})
+                        
+                        Router.refresh()
+                    }
                     console.log("Username updated")
                     setIsSubmitting(false)
-                    Router.refresh()
                 }
                 else{
                     console.log("Error updating username")

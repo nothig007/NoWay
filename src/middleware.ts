@@ -34,6 +34,16 @@ export async function middleware(request: NextRequest) {
       }
 
     }
+    if(token.provider === "google"){
+      if(!token.username){
+        console.log("Redirecting to /confirm-username...");
+        return NextResponse.redirect(new URL('/confirm-username', request.url));
+      }
+      else{
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+      }
+
+    }
     console.log("Redirecting to /dashboard...");
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }

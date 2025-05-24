@@ -71,6 +71,9 @@ export const authOptions: NextAuthOptions = {
   
   callbacks: {
     async jwt({ token, user, account }) {
+
+      console.log("Google User Data:", JSON.stringify(user, null, 2))
+      console.log("Google account Data:", JSON.stringify(account, null, 2))
       if (account && user) {
         if(account.provider==="github"){
           // console.log("account.provider "+ account.provider)
@@ -83,6 +86,7 @@ export const authOptions: NextAuthOptions = {
           token._id = user._id?.toString(); // Convert ObjectId to string
           token.username = user.username||"";
           // console.log("JWT Token:");
+          console.log("token.username"+ token.username)
           if (!token.username) {
             console.log("inside !token.username")
             const dbUser = await UserModel.findOne({
@@ -99,19 +103,21 @@ export const authOptions: NextAuthOptions = {
           console.log("Google account Data:", JSON.stringify(account, null, 2))
           
           token.email = user.email || token.email || "Missing Email";
-          token.image = user.image;   
+          token.image = user.image;  
+          token.id = user.id 
           token._id = user._id?.toString(); // Convert ObjectId to string
           token.username = user.username||"";
           console.log("Google Token Data: ", JSON.stringify(token, null, 2))
           // console.log("JWT Token:");
-          if (!token.username) {
-            console.log("inside !token.username")
-            const dbUser = await UserModel.findOne({
-              email: token.email,
-              provider: token.provider
-            });
-            if (dbUser) {console.log("yes dbuser is true")}
+          token.provider = account.provider
+          const dbUser = await UserModel.findOne({
+            email: token.email,
+            provider: token.provider
+          });
+          if (token.username!==dbUser?.username && dbUser?.username) {
             token.username = dbUser?.username || "";
+            console.log("inside !token.username")
+            if (dbUser) {console.log("yes dbuser is true")}
             if (dbUser) {console.log("token.username" + token.username)}
           }
         }
@@ -131,7 +137,8 @@ export const authOptions: NextAuthOptions = {
       }
       token.email = token.email ?? "Missing Email";
       token.provider = token.provider ?? "username not selected"
-    console.log("JWT Token:", JSON.stringify(token, null, 2));
+      token.username = token.username??"no idea"
+      console.log("JWT Token:", JSON.stringify(token, null, 2));
       return token;
     },
     async session({ session, token }) {
@@ -140,6 +147,7 @@ export const authOptions: NextAuthOptions = {
       // console.log("session: "+session.user.username)
       if (token) {
         session.user._id = token._id;
+        session.user.id = token.id
         session.user.username = token.username;
         session.user.email = token.email;
         session.user.provider = token.provider
