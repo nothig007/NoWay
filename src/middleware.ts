@@ -7,7 +7,13 @@ export async function middleware(request: NextRequest) {
 
   const token = await getToken({req: request})
   const url = request.nextUrl
-
+  if(token){
+    if(token.provider ==="github"){
+        if(token.username===""){
+          return NextResponse.redirect(new URL('/confirm-username', request.url));
+        }
+      }
+  }
  if (
     token && 
     !url.pathname.startsWith('/dashboard') && // 🚀 Prevent redirect loop
@@ -18,8 +24,25 @@ export async function middleware(request: NextRequest) {
       url.pathname.startsWith('/')
     )
   ) {
+    if(token.provider === "github"){
+      if(!token.username){
+        console.log("Redirecting to /confirm-username...");
+        return NextResponse.redirect(new URL('/confirm-username', request.url));
+      }
+      else{
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+      }
+
+    }
     console.log("Redirecting to /dashboard...");
     return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+  if(token && url.pathname.startsWith('/confirm-username')){
+    if(token.provider ==="github"){
+      if(token.username!==""){
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+      }
+    }
   }
 }
 // See "Matching Paths" below to learn more

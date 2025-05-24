@@ -72,37 +72,77 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (account && user) {
-        console.log("GitHub User Data:", JSON.stringify(user, null, 2))
-        const email = await TempEmailModel.findById(user.id)
-        token.provider = account.provider;
-        token.email = email?.email || user.email || token.email || "Missing Email";
-    console.log("✅ Setting email from user object during sign in:", token.email);
-        token.image = user.image;   
-        token._id = user._id?.toString(); // Convert ObjectId to string
-        console.log("JWT Token:");
+        if(account.provider==="github"){
+          // console.log("account.provider "+ account.provider)
+          // console.log("GitHub User Data:", JSON.stringify(user, null, 2))
+          const email = await TempEmailModel.findOne({userId: user.id})
+          token.provider = account.provider || email?.provider;
+          token.email = email?.email || user.email || token.email || "Missing Email";
+          // console.log("✅ Setting email from user object during sign in:", token.email);
+          token.image = user.image;   
+          token._id = user._id?.toString(); // Convert ObjectId to string
+          token.username = user.username||"";
+          // console.log("JWT Token:");
+          if (!token.username) {
+            console.log("inside !token.username")
+            const dbUser = await UserModel.findOne({
+              email: token.email,
+              provider: token.provider
+            });
+            if (dbUser) {console.log("yes dbuser is true")}
+            token.username = dbUser?.username || "";
+            if (dbUser) {console.log("token.username" + token.username)}
+          }
+        }
+        else if (account.provider==="google"){
+          console.log("Google User Data:", JSON.stringify(user, null, 2))
+          console.log("Google account Data:", JSON.stringify(account, null, 2))
+          
+          token.email = user.email || token.email || "Missing Email";
+          token.image = user.image;   
+          token._id = user._id?.toString(); // Convert ObjectId to string
+          token.username = user.username||"";
+          console.log("Google Token Data: ", JSON.stringify(token, null, 2))
+          // console.log("JWT Token:");
+          if (!token.username) {
+            console.log("inside !token.username")
+            const dbUser = await UserModel.findOne({
+              email: token.email,
+              provider: token.provider
+            });
+            if (dbUser) {console.log("yes dbuser is true")}
+            token.username = dbUser?.username || "";
+            if (dbUser) {console.log("token.username" + token.username)}
+          }
+        }
+        else if (account.provider==="credentials") {
+          if (user) {
+            console.log("GitHub User Data:", JSON.stringify(user, null, 2))
+            token._id = user._id?.toString(); // Convert ObjectId to string
+            token.username = user.username;
+            token.email = user.email
+          }
+
+        }
 
       }
       else{
         
-        if (user) {
-          console.log("GitHub User Data:", JSON.stringify(user, null, 2))
-          token._id = user._id?.toString(); // Convert ObjectId to string
-        token.username = user.username;
-        token.email = user.email
       }
-    }
-    token.email = token.email ?? "Missing Email";
+      token.email = token.email ?? "Missing Email";
+      token.provider = token.provider ?? "username not selected"
     console.log("JWT Token:", JSON.stringify(token, null, 2));
       return token;
     },
     async session({ session, token }) {
-      console.log("session: "+session)
-      console.log("session: "+session.user)
-      console.log("session: "+session.user.username)
+      // console.log("session: "+session)
+      // console.log("session: "+session.user)
+      // console.log("session: "+session.user.username)
       if (token) {
         session.user._id = token._id;
         session.user.username = token.username;
         session.user.email = token.email;
+        session.user.provider = token.provider
         session.user.image = token.image;
       }
       return session;
@@ -124,19 +164,35 @@ export const authOptions: NextAuthOptions = {
       console.log("emails"+ emails)
       const primaryEmail = Array.isArray(emails) ? emails.find((e) => e.primary)?.email : null;
       if (primaryEmail) {
+        console.log("userId: "+user.id)
+        console.log("user._id: "+user._id)
+        console.log("email: "+primaryEmail)
       const tempEmail = new TempEmailModel({
-        _id: user.id,
-        email: primaryEmail
+        userId: user.id,
+        email: primaryEmail,
+        provider: account.provider
       })
-      await tempEmail.save()
+      try {
+        await tempEmail.save()
+      } catch (error) {
+        console.log("error in saving temp email: "+ error)
+      }
     }
       user.email = primaryEmail || user.email;
       console.log("user.email: "+ user.email)
     }
-    console.log("GitHub :", JSON.stringify(user, null, 2))
+    console.log("user :", JSON.stringify(user, null, 2))
+    if(account.provider==="google"){
+      console.log("ye we got google acc")
+    }
 
     return true
-  },
+
+
+
+  }
+  ,
+
 },
   session: {
     strategy: 'jwt',

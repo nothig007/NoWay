@@ -28,7 +28,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname();
-  const authPages = ["/sign-up", "/sign-in", "/verify"];
+  const authPages = ["/sign-up", "/sign-in", "/verify", "/confirm-username"];
 
   const isAuthPage = authPages.includes(pathname);
   return (

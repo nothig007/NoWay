@@ -23,9 +23,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   console.log("Session Data:", JSON.stringify(session, null, 2));
   const data= {
     user : {
-      name: "Joe Mama",
+      name: session?.user.username,
           email: session?.user.email,
-          avatar: "https://upload.wikimedia.org/wikipedia/commons/b/bc/President_Joe_Biden_2025.jpg",
+          avatar: session?.user.image,
       },
       navMain: [
       {   title: "Home",

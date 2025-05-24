@@ -22,15 +22,16 @@ const MessageSchema: Schema<Message>= new Schema({
 
     export interface tempEmail extends Document {
         email: string;
-        _id: String;
+        userId: string;
+        provider: string;
         createdAt: Date
     }
     
     export interface User extends Document{
         username: string
         email: string
+        provider: string
         password: string
-        isVerified : boolean
     }
     export interface OTP extends Document{
         username: string
@@ -44,7 +45,7 @@ const MessageSchema: Schema<Message>= new Schema({
 
 
 const tempEmail: Schema<tempEmail> = new Schema({
-    _id: {
+    userId: {
         type: String,
         required: true,
         unique: true
@@ -53,10 +54,11 @@ const tempEmail: Schema<tempEmail> = new Schema({
         type: String,
         required: true
     },
+    provider: String,
     createdAt: {
         type: Date,
         default: Date.now,
-        expires: 900 
+        expires: 60*60*12
     }
 })
 
@@ -69,12 +71,17 @@ const UserSchema: Schema<User> = new Schema({
     email: {
         type: String,
         required: [true, "username is required"],
-        unique: true,
         match: [/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/, "Please fill a valid email address"]
+    },
+    provider: {
+        type: String,
+        default: ""
     },
     password: {
         type: String,
-        required: [true, "password is required"], 
+        required: function(){
+            return this.provider === "";
+        }, 
     }
 })
 
@@ -119,3 +126,4 @@ const OTPSchema: Schema<OTP> =  new Schema({
 export const UserModel = (mongoose.models.User as mongoose.Model<User>) || mongoose.model<User>("User", UserSchema)
 export const OTPModel = (mongoose.models.OTP as mongoose.Model<OTP>) || mongoose.model<OTP>("OTP", OTPSchema);
 export const TempEmailModel = (mongoose.models.tempEmail as mongoose.Model<tempEmail>) || mongoose.model<tempEmail>("tempEmail", tempEmail);
+// console.log(mongoose.models); // See if 'User' exists
